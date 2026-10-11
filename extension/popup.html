@@ -40,7 +40,10 @@
       <form id="settings">
         <p class="settings-intro">Your page. Your pace.</p>
         <label class="output-field" for="image-output">Image output
-          <select id="image-output" name="imageOutput"><option value="single">One full-page PNG</option><option value="multiple">Multiple PNGs for large pages</option></select>
+          <span class="select-wrap">
+            <select id="image-output" name="imageOutput"><option value="single">One full-page PNG</option><option value="multiple">Multiple PNGs for large pages</option></select>
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </span>
         </label>
         <div class="settings-grid">
           <label for="max-duration">Maximum duration<span class="input-wrap"><input id="max-duration" name="maxDuration" type="number" min="10" max="600" step="1" required><span class="unit" aria-hidden="true">sec</span></span><small>10–600 seconds</small></label>
