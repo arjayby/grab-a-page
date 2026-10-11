@@ -35,7 +35,12 @@ test('PNG parts cover every pixel once and respect dimension and allocation limi
 });
 test('settings remain bounded and invalid inputs use defaults', () => {
   assert.deepEqual(normalizeSettings({ maxDuration: NaN, maxHeight: 1e9, waitMs: -1, loadTimeout: '2000' }),
-    { maxDuration: 120, maxHeight: 100000, waitMs: 300, loadTimeout: 2000 });
+    { maxDuration: 120, maxHeight: 100000, waitMs: 300, loadTimeout: 2000, imageOutput: 'single' });
+});
+test('image output defaults to one PNG and preserves an explicit multiple-image choice', () => {
+  assert.equal(normalizeSettings().imageOutput, 'single');
+  assert.equal(normalizeSettings({ imageOutput: 'multiple' }).imageOutput, 'multiple');
+  assert.equal(normalizeSettings({ imageOutput: 'invalid' }).imageOutput, 'single');
 });
 test('export names cannot introduce paths and parts remain ordered', () => {
   assert.equal(safeFilename('../a:b*', 0, 1, 3), '..-a-b--1970-01-01T00-00-00-000Z-part-02.png');

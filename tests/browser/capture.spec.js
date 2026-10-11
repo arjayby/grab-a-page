@@ -59,6 +59,8 @@ test('full page loads lazy images, stitches seams at Retina scale, and restores 
   await page.evaluate(() => scrollTo({ top: 430, behavior: 'instant' }));
   const { preview, session } = await capture(page);
   expect(session.status).toBe('complete');
+  expect(session.imageOutput).toBe('single');
+  await expect(preview.locator('.part')).toHaveCount(1);
   expect(session.height).toBe(4050);
   expect(session.scale).toBe(2);
   expect(session.tiles.length).toBeGreaterThan(5);
@@ -125,14 +127,81 @@ test('failed source images produce an explicit incomplete warning', async () => 
   expect(session.warnings.join(' ')).toContain('failed to load');
   await preview.close(); await page.close();
 });
-test('large captures split into numbered full-resolution PNGs', async () => {
+test('large captures default to one full-resolution PNG and retain that output when reopened', async () => {
   const page = await context.newPage(); await page.goto('http://127.0.0.1:4173/finite?sections=18');
   const { preview, session } = await capture(page);
+  expect(session.height).toBe(9050);
+  expect(session.imageOutput).toBe('single');
+  await expect(preview.locator('.part')).toHaveCount(1);
+  const image = preview.locator('.part img');
+  expect(await image.evaluate(async img => { await img.decode(); return [img.naturalWidth, img.naturalHeight]; }))
+    .toEqual([session.width * session.scale, 18100]);
+  expect(await pixel(preview, 20, 18090)).toEqual([34, 51, 68]);
+  expect(await preview.locator('.part-header a').getAttribute('download')).not.toContain('-part-');
+  await preview.evaluate(() => chrome.storage.local.set({ settings: { imageOutput: 'multiple' } }));
+  await preview.reload();
+  await expect(preview.locator('#download')).toBeEnabled();
+  await expect(preview.locator('.part')).toHaveCount(1);
+  await preview.close(); await page.close();
+});
+test('large captures can still split into numbered full-resolution PNGs', async () => {
+  const page = await context.newPage(); await page.goto('http://127.0.0.1:4173/finite?sections=18');
+  const { preview, session } = await capture(page, { settings: { imageOutput: 'multiple' } });
   expect(session.height).toBe(9050);
   await expect(preview.locator('.part')).toHaveCount(2);
   const names = await preview.locator('.part-header a').evaluateAll(links => links.map(link => link.download));
   expect(names[0]).toContain('-part-01.png'); expect(names[1]).toContain('-part-02.png');
   await preview.close(); await page.close();
+});
+test('popup saves and restores the image output setting with single image as the default', async () => {
+  const popup = await context.newPage();
+  await popup.goto(`chrome-extension://${extensionId}/popup.html`);
+  await popup.evaluate(() => chrome.storage.local.remove('settings'));
+  await popup.reload();
+  await popup.locator('summary').click();
+  await expect(popup.locator('select[name="imageOutput"]')).toHaveValue('single');
+  await popup.screenshot({ path: 'test-results/settings.png' });
+  await popup.locator('select[name="imageOutput"]').selectOption('multiple');
+  await popup.locator('button[type="submit"]').click();
+  await expect(popup.locator('#saved')).toHaveText('Saved');
+  await popup.reload();
+  await expect(popup.locator('select[name="imageOutput"]')).toHaveValue('multiple');
+  await popup.close();
+});
+test('saved sections stitch into one PNG beyond full-canvas height limits', async () => {
+  const preview = await context.newPage();
+  await preview.goto(`chrome-extension://${extensionId}/popup.html`);
+  const id = await preview.evaluate(async () => {
+    const { putSession, putTile } = await import('./lib/db.js');
+    const id = crypto.randomUUID();
+    const tiles = [];
+    for (let y = 0; y < 40050; y += 1000) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 48; canvas.height = Math.min(1000, 40050 - y);
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = (y / 1000) % 2 ? '#00ff00' : '#ff0000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      const tile = { key: `${id}:${tiles.length}`, sessionId: id, y, width: 48, height: canvas.height,
+        pixelWidth: 48, pixelHeight: canvas.height };
+      await putTile({ ...tile, blob });
+      tiles.push(tile);
+    }
+    // Legacy captures without an output preference also default to one PNG.
+    await putSession({ id, title: 'Tall saved page', createdAt: Date.now(), endedAt: Date.now(), mode: 'full',
+      status: 'complete', warnings: [], width: 48, height: 40050, scale: 1, tiles });
+    return id;
+  });
+  await preview.goto(`chrome-extension://${extensionId}/preview.html?id=${id}`);
+  await expect(preview.locator('#download')).toBeEnabled();
+  await expect(preview.locator('.part')).toHaveCount(1);
+  expect(await preview.locator('.part img').evaluate(async img => { await img.decode(); return [img.naturalWidth, img.naturalHeight]; }))
+    .toEqual([48, 40050]);
+  expect(await pixel(preview, 20, 999)).toEqual([255, 0, 0]);
+  expect(await pixel(preview, 20, 1000)).toEqual([0, 255, 0]);
+  expect(await pixel(preview, 20, 33000)).toEqual([0, 255, 0]);
+  expect(await pixel(preview, 20, 40049)).toEqual([255, 0, 0]);
+  await preview.close();
 });
 test('Escape from the source page cancels through the content script', async () => {
   const page = await context.newPage(); await page.goto('http://127.0.0.1:4173/finite?sections=30');

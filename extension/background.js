@@ -129,7 +129,7 @@ async function start(mode) {
   if (!tab?.id) throw new Error('Open the webpage you want to capture.');
   const settings = normalizeSettings((await chrome.storage.local.get('settings')).settings);
   const session = { id: crypto.randomUUID(), title: tab.title || 'Page capture', url: tab.url || '', createdAt: Date.now(),
-    mode, status: 'partial', warnings: [], tiles: [], width: 0, height: 0, scale: 0 };
+    mode, imageOutput: settings.imageOutput, status: 'partial', warnings: [], tiles: [], width: 0, height: 0, scale: 0 };
   const current = { tab, settings, session, started: Date.now(), cancelled: false, finished: false };
   job = current;
   try {

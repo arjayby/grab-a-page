@@ -25,7 +25,9 @@ Full-page captures keep top fixed headers once and temporarily hide other fixed 
 
 The default safety limits are **120 seconds** and **30,000 CSS pixels** of page height. The popup’s settings let you change these, the minimum pause after each scroll (700 ms), and the loading timeout (5 seconds). If a page loads content slowly after it enters view, increase the pause and loading timeout.
 
-Large captures split into numbered PNGs at the original screenshot resolution. Parts are ordered from top to bottom (and left to right for exceptionally wide images). You can download each part separately. If Chrome asks to allow multiple downloads when using **Download all**, allow them or use the individual download links.
+**Image output** in Capture settings defaults to **One full-page PNG**, stitching every captured section into one image at the original screenshot resolution. The stitcher processes small strips so long pages do not require a full-page canvas. Save settings before starting a capture; each capture remembers its output choice when reopened.
+
+Choose **Multiple PNGs for large pages** to use the previous export behavior: large captures split into numbered PNGs at the original resolution. Parts are ordered from top to bottom (and left to right for exceptionally wide images). Small captures still produce one PNG. You can download each part separately. If Chrome asks to allow multiple downloads when using **Download all**, allow them or use the individual download links.
 
 ## Supported pages and limits
 

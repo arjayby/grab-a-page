@@ -1,5 +1,7 @@
 import { getSession, getTile, deleteSession } from './lib/db.js';
 import { tileSlice, planParts, safeFilename, MAX_PART_PIXELS } from './lib/geometry.js';
+import { encodePng } from './lib/png.js';
+import { normalizeSettings } from './lib/settings.js';
 const $ = id => document.getElementById(id);
 const id = new URLSearchParams(location.search).get('id');
 let exports = [];
@@ -18,7 +20,7 @@ function canvasBlob(canvas) {
     catch (error) { reject(error); }
   });
 }
-async function renderPart(part, slices) {
+async function renderPart(part, slices, pixels = false) {
   const canvas = document.createElement('canvas');
   canvas.width = part.width;
   canvas.height = part.height;
@@ -39,8 +41,26 @@ async function renderPart(part, slices) {
           0, top - part.y, part.width, bottom - top);
       } finally { bitmap.close(); }
     }
-    return await canvasBlob(canvas);
+    return pixels ? context.getImageData(0, 0, part.width, part.height).data : await canvasBlob(canvas);
   } finally { canvas.width = 0; canvas.height = 0; }
+}
+async function* renderStrips(width, height, slices) {
+  const stripHeight = Math.max(1, Math.min(256, Math.floor(2000000 / width)));
+  for (let y = 0; y < height; y += stripHeight) {
+    const rows = Math.min(stripHeight, height - y);
+    $('status').textContent = `Stitching full-page image… ${Math.round(y / height * 100)}%`;
+    // Horizontal parts also keep exceptionally wide captures within canvas limits.
+    const parts = planParts(width, rows);
+    const data = new Uint8Array(width * rows * 4);
+    for (const part of parts) {
+      const pixels = await renderPart({ ...part, y: y + part.y }, slices, true);
+      for (let row = 0; row < part.height; row++) {
+        data.set(pixels.subarray(row * part.width * 4, (row + 1) * part.width * 4),
+          ((part.y + row) * width + part.x) * 4);
+      }
+    }
+    yield { data, height: rows };
+  }
 }
 function showPart(item, index, count, part) {
   const article = document.createElement('article');
@@ -89,25 +109,33 @@ async function main() {
     const slice = tileSlice(tile, covered, session.height, session.scale);
     if (slice) { slices.push({ tile, slice }); covered = slice.coveredCss; }
   }
-  let budget = MAX_PART_PIXELS;
-  for (;;) {
-    const parts = planParts(width, height, budget);
-    try {
-      for (let index = 0; index < parts.length; index++) {
-        $('status').textContent = `Preparing image ${index + 1} of ${parts.length}…`;
-        const blob = await renderPart(parts[index], slices);
-        const item = { url: URL.createObjectURL(blob), name: safeFilename(session.title, session.createdAt, index, parts.length) };
-        exports.push(item);
-        showPart(item, index, parts.length, parts[index]);
-        await new Promise(resolve => setTimeout(resolve, 0));
+  const single = normalizeSettings(session).imageOutput === 'single';
+  if (single) {
+    const blob = await encodePng(width, height, renderStrips(width, height, slices));
+    const item = { url: URL.createObjectURL(blob), name: safeFilename(session.title, session.createdAt, 0, 1) };
+    exports.push(item);
+    showPart(item, 0, 1, { x: 0, y: 0, width, height });
+  } else {
+    let budget = MAX_PART_PIXELS;
+    for (;;) {
+      const parts = planParts(width, height, budget);
+      try {
+        for (let index = 0; index < parts.length; index++) {
+          $('status').textContent = `Preparing image ${index + 1} of ${parts.length}…`;
+          const blob = await renderPart(parts[index], slices);
+          const item = { url: URL.createObjectURL(blob), name: safeFilename(session.title, session.createdAt, index, parts.length) };
+          exports.push(item);
+          showPart(item, index, parts.length, parts[index]);
+          await new Promise(resolve => setTimeout(resolve, 0));
+        }
+        break;
+      } catch (error) {
+        release();
+        $('parts').replaceChildren();
+        if (budget <= 1500000 || /no longer/.test(error.message)) throw error;
+        budget = Math.floor(budget / 2);
+        $('status').textContent = 'Retrying with smaller image parts…';
       }
-      break;
-    } catch (error) {
-      release();
-      $('parts').replaceChildren();
-      if (budget <= 1500000 || /no longer/.test(error.message)) throw error;
-      budget = Math.floor(budget / 2);
-      $('status').textContent = 'Retrying with smaller image parts…';
     }
   }
   if (exports.length > 1) notice('This capture was split into numbered PNGs to preserve resolution within browser image and memory limits. Download each part below, or use Download all.');
