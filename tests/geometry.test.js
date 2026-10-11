@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { tileSlice, planParts, safeFilename } from '../extension/lib/geometry.js';
+import { tileSlice, planTileSlices, planParts, safeFilename } from '../extension/lib/geometry.js';
 import { normalizeSettings } from '../extension/lib/settings.js';
 
 test('overlapping captures, including the clamped last viewport, form one continuous image', () => {
@@ -21,6 +21,15 @@ test('height limit crops the final tile and redundant tiles are skipped', () => 
   const slice = tileSlice({ y: 640, height: 800 }, 800, 1000, 2);
   assert.deepEqual(slice, { sourceY: 320, destinationY: 1600, height: 400, coveredCss: 1000 });
   assert.equal(tileSlice({ y: 0, height: 800 }, 1000, 1000, 2), null);
+});
+test('later screenshots replace overlap pixels that may contain unrevealed content', () => {
+  const tiles = [{ y: 0, height: 800 }, { y: 400, height: 800 }, { y: 800, height: 800 }, { y: 1000, height: 800 }];
+  const slices = planTileSlices(tiles, 1800, 1.25);
+  assert.deepEqual(slices.map(({ slice }) => [slice.sourceY, slice.destinationY, slice.height]),
+    [[0, 0, 500], [0, 500, 500], [0, 1000, 250], [0, 1250, 1000]]);
+  assert.equal(slices.reduce((sum, { slice }) => sum + slice.height, 0), 2250);
+  const cropped = planTileSlices(tiles, 1100, 2);
+  assert.equal(cropped.at(-1).slice.destinationY + cropped.at(-1).slice.height, 2200);
 });
 test('PNG parts cover every pixel once and respect dimension and allocation limits', () => {
   for (const [width, height] of [[1440, 900], [2880, 60000], [20000, 18000]]) {

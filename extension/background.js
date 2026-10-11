@@ -84,6 +84,7 @@ async function run(current) {
         initialViewport ||= { width: measured.width, height: measured.height };
         if (measured.width !== initialViewport.width || measured.height !== initialViewport.height) throw new Error('The viewport was resized during capture.');
         if (measured.pendingImages || measured.fontsPending) warn(current, 'Some images or fonts exceeded the loading wait and may be missing. Increase the loading wait and try again.');
+        if (measured.pendingAnimations) warn(current, 'Some reveal animations exceeded the loading wait. Increase the loading wait and try again.');
         if (measured.failedImages) warn(current, 'Some images failed to load on the source page.');
         if (!(await takeTile(current, measured))) break;
         if (current.cancelled || current.finished) break;
@@ -96,7 +97,9 @@ async function run(current) {
           if (current.cancelled || current.finished) break;
           if (latest.pageHeight <= current.session.height + 1) { current.session.status = 'complete'; break; }
         }
-        const overlap = Math.min(160, latest.height * .2);
+        // Reveal observers often wait until content is well inside the viewport.
+        // Revisit the lower half so it can be stitched from the later screenshot.
+        const overlap = latest.height * .5;
         y = Math.min(current.session.height - overlap, latest.pageHeight - latest.height);
         y = Math.max(0, y);
         if (y <= measured.y + .5) {

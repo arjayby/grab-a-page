@@ -1,5 +1,5 @@
 import { getSession, getTile, deleteSession } from './lib/db.js';
-import { tileSlice, planParts, safeFilename, MAX_PART_PIXELS } from './lib/geometry.js';
+import { planTileSlices, planParts, safeFilename, MAX_PART_PIXELS } from './lib/geometry.js';
 import { encodePng } from './lib/png.js';
 import { normalizeSettings } from './lib/settings.js';
 const $ = id => document.getElementById(id);
@@ -103,12 +103,7 @@ async function main() {
   if (!session.tiles.length) { $('empty').hidden = false; $('status').textContent = 'Nothing to export.'; return; }
   const width = Math.round(session.width * session.scale);
   const height = Math.round(session.height * session.scale);
-  const slices = [];
-  let covered = 0;
-  for (const tile of session.tiles) {
-    const slice = tileSlice(tile, covered, session.height, session.scale);
-    if (slice) { slices.push({ tile, slice }); covered = slice.coveredCss; }
-  }
+  const slices = planTileSlices(session.tiles, session.height, session.scale);
   const single = normalizeSettings(session).imageOutput === 'single';
   if (single) {
     const blob = await encodePng(width, height, renderStrips(width, height, slices));

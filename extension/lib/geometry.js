@@ -1,7 +1,7 @@
 export const MAX_PART_DIMENSION = 16000;
 export const MAX_PART_PIXELS = 24000000;
 
-// Keep the existing overlap and append only the newly exposed bottom of each tile.
+// Crop each tile at the next tile's start so later captures own overlapping rows.
 // All coordinates are converted using the actual screenshot scale, including browser zoom.
 export function tileSlice(tile, coveredCss, targetCss, scale) {
   const from = Math.max(coveredCss, tile.y);
@@ -10,6 +10,18 @@ export function tileSlice(tile, coveredCss, targetCss, scale) {
   const destinationY = Math.round(from * scale);
   const end = Math.round(to * scale);
   return { sourceY: destinationY - Math.round(tile.y * scale), destinationY, height: end - destinationY, coveredCss: to };
+}
+
+export function planTileSlices(tiles, targetCss, scale) {
+  const slices = [];
+  let covered = 0;
+  for (let index = 0; index < tiles.length; index++) {
+    const tile = tiles[index];
+    const end = Math.min(targetCss, tiles[index + 1]?.y ?? targetCss);
+    const slice = tileSlice(tile, covered, end, scale);
+    if (slice) { slices.push({ tile, slice }); covered = slice.coveredCss; }
+  }
+  return slices;
 }
 
 export function planParts(width, height, pixelBudget = MAX_PART_PIXELS) {

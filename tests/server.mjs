@@ -1,6 +1,14 @@
 import http from 'node:http';
 const colors = ['#e4bdaa', '#b9d5c9', '#afc7e7', '#e9d49d', '#cdbbdc', '#e5b8c8'];
 function fixture(url) {
+  if (url.pathname === '/motion') return `<!doctype html><html><head><meta charset="utf-8"><title>Sticky and reveal fixture</title><style>
+*{box-sizing:border-box}body{margin:0;background:white}.spacer{height:900px}.columns{display:grid;grid-template-columns:1fr 1fr;align-items:start;height:2500px}
+#panel{position:sticky;top:60px}#panel div{height:300px}.card{height:500px;background:#08f;opacity:0}.card.revealed{animation:reveal 900ms forwards}
+@keyframes reveal{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+</style></head><body><div class="spacer">Scroll down</div><main class="columns"><aside id="panel"><div style="background:#f00">Sticky heading</div><div style="background:#0f0">Code panel top</div><div style="background:#00f">Code panel middle</div><div style="background:#ff0">Code panel bottom</div></aside><section>${'<div class="card">Revealed content</div>'.repeat(5)}</section></main><footer style="height:50px;background:#234">End</footer><script>
+window.scrollSteps=[];addEventListener('scroll',()=>scrollSteps.push(scrollY));
+const observer=new IntersectionObserver(entries=>{for(const e of entries)if(e.isIntersecting)e.target.classList.add('revealed')},{rootMargin:'0px 0px -'+Math.round(innerHeight*.4)+'px 0px'});for(const card of document.querySelectorAll('.card'))observer.observe(card);
+</script></body></html>`;
   const count = Number(url.searchParams.get('sections') || 8);
   const infinite = url.pathname === '/infinite';
   const virtual = url.pathname === '/virtual';

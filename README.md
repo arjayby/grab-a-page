@@ -16,12 +16,12 @@ There is no build step, account, or server. The unpacked extension can also be t
 
 Open the webpage you want to capture, then click the extension icon:
 
-- **Full page** starts at the top and scrolls through overlapping viewports, waiting for visible images and page layout to settle before capturing each section. Keep the source tab active and leave the window size and zoom unchanged.
+- **Full page** starts at the top and scrolls in small animated steps through overlapping viewports, waiting for visible images, finite reveal animations, and page layout to settle before capturing each section. Keep the source tab active and leave the window size and zoom unchanged.
 - **Visible area** captures the current viewport, including its fixed headers and floating widgets, without scrolling or changing the page.
 
 Full-page capture displays progress with **Finish now** and **Cancel** buttons. Escape also cancels. Finish now keeps the captured sections. Cancellation keeps any sections already captured and labels the result as cancelled. Both restore the original scroll position and temporarily modified styles. A preview opens after capture, where you can download the PNG or delete the temporary capture. **Open last capture** in the popup reopens your latest saved result, including sections saved before an interruption.
 
-Full-page captures keep top fixed headers once and temporarily hide other fixed overlays. Sticky elements are kept on their first captured appearance and hidden when they would repeat. This is a layout heuristic; unusual CSS can need a different policy in a future version.
+Full-page captures keep top fixed headers once and temporarily hide other fixed overlays. Sticky elements temporarily stay in their normal document positions so their contents appear once, including panels taller than a viewport. Animations run while scrolling and settling, then pause for each screenshot. All temporary styles are restored after capture. This is a layout heuristic; unusual CSS can need a different policy in a future version.
 
 The default safety limits are **120 seconds** and **30,000 CSS pixels** of page height. The popup’s settings let you change these, the minimum pause after each scroll (700 ms), and the loading timeout (5 seconds). If a page loads content slowly after it enters view, increase the pause and loading timeout.
 

@@ -98,6 +98,24 @@ test('visible area captures exactly the viewport including fixed widgets', async
   expect(await pixel(preview, 10, 10)).toEqual([37, 77, 63]);
   await preview.close(); await page.close();
 });
+test('gradual scrolling waits for reveals and captures tall sticky content once in document flow', async () => {
+  const page = await context.newPage(); await page.goto('http://127.0.0.1:4173/motion');
+  const { preview, session } = await capture(page);
+  expect(session.status).toBe('complete');
+  expect(session.height).toBe(3450);
+  for (const [y, color] of [[950, [255,0,0]], [1250, [0,255,0]], [1550, [0,0,255]], [1850, [255,255,0]], [2200, [255,255,255]]]) {
+    expect(await pixel(preview, 20, y * session.scale)).toEqual(color);
+  }
+  for (const y of [1150, 1650, 2150, 2650, 3150]) {
+    expect(await pixel(preview, Math.round(session.width * .75 * session.scale), y * session.scale)).toEqual([0,136,255]);
+  }
+  const restored = await page.locator('#panel').evaluate(el => ({ position: getComputedStyle(el).position, top: getComputedStyle(el).top, style: el.getAttribute('style') }));
+  expect(restored).toEqual({ position: 'sticky', top: '60px', style: '' });
+  const steps = await page.evaluate(() => scrollSteps);
+  expect(steps.length).toBeGreaterThan(session.tiles.length * 3);
+  expect(await page.evaluate(() => scrollY)).toBe(0);
+  await preview.close(); await page.close();
+});
 test('height limit returns a labeled partial result on an infinite feed', async () => {
   const page = await context.newPage(); await page.goto('http://127.0.0.1:4173/infinite?sections=2');
   const { preview, session } = await capture(page, { settings: { maxHeight: 2000 } });
