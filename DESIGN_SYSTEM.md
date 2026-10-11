@@ -20,7 +20,7 @@ The extension uses a dark, precise visual language: near-black surfaces, warm wh
 
 Headings and the wordmark use bundled Stack Sans Notch. Metadata, controls, and numeric inputs use bundled DM Mono. Body copy uses the platform sans-serif. Font licenses live with the assets in `extension/fonts/`; fonts load locally without network requests.
 
-Spacing follows a 4, 8, 12, 16, 24, 32, 48 px scale. Icons use unfilled geometric paths, consistent 1.5 px strokes, and a capture-frame motif. The browser toolbar icons are regenerated with `node scripts/generate-icons.mjs`.
+Spacing follows a 4, 8, 12, 16, 24, 32, 48 px scale. Icons use unfilled geometric paths, consistent 1.5 px strokes, and a capture-frame motif. Brand marks use the amber accent (`#eea052`) in the popup, preview, capture controls, and browser toolbar. The browser toolbar icons are regenerated with `node scripts/generate-icons.mjs`.
 
 ## Components and states
 
