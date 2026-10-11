@@ -4,14 +4,18 @@ const settings = normalizeSettings((await chrome.storage.local.get('settings')).
 for (const [name, value] of Object.entries(settings)) $('settings').elements[name].value = value;
 $('settings').addEventListener('submit', async event => {
   event.preventDefault();
-  await chrome.storage.local.set({ settings: normalizeSettings(Object.fromEntries(new FormData(event.target))) });
+  const settings = normalizeSettings(Object.fromEntries(new FormData(event.target)));
+  await chrome.storage.local.set({ settings });
+  for (const [name, value] of Object.entries(settings)) event.target.elements[name].value = value;
   $('saved').textContent = 'Saved';
 });
+$('settings').addEventListener('input', () => { $('saved').textContent = ''; });
 async function refresh() {
   const status = await chrome.runtime.sendMessage({ type: 'status' });
   $('running').hidden = !status.running;
   $('full').disabled = $('visible').disabled = status.running;
   $('last').disabled = status.running;
+  $('state-label').textContent = status.running ? 'Capturing' : $('error').hidden ? 'Ready' : 'Check page';
   if (status.running) $('progress').textContent = `${status.tiles} sections captured · ${status.height.toLocaleString()} px`;
 }
 for (const mode of ['full', 'visible']) $(mode).addEventListener('click', async () => {

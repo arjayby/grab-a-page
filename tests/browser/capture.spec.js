@@ -176,6 +176,7 @@ test('popup saves and restores the image output setting with single image as the
   await popup.goto(`chrome-extension://${extensionId}/popup.html`);
   await popup.evaluate(() => chrome.storage.local.remove('settings'));
   await popup.reload();
+  await popup.locator('body').screenshot({ path: 'test-results/popup.png' });
   await popup.locator('summary').click();
   await expect(popup.locator('select[name="imageOutput"]')).toHaveValue('single');
   await popup.screenshot({ path: 'test-results/settings.png' });

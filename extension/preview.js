@@ -89,6 +89,7 @@ function showPart(item, index, count, part) {
   $('parts').append(article);
 }
 async function main() {
+  if (!id) throw new Error('No capture selected. Open the extension and capture a page to create a preview.');
   session = await getSession(id);
   if (!session) throw new Error('This capture was deleted or expired. Return to the webpage and capture it again.');
   $('title').textContent = session.title;
@@ -166,4 +167,6 @@ main().catch(error => {
   $('title').textContent = 'Unable to prepare this capture';
   notice(error.message);
   $('status').textContent = 'Return to the page and try capturing again.';
+  $('empty').hidden = false;
+  $('empty').querySelector('h2').textContent = 'No preview available';
 });

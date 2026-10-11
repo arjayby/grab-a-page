@@ -75,9 +75,25 @@
     document.documentElement.append(motionStyle);
     const host = document.createElement('div');
     host.id = 'grab-a-page-controls';
-    host.style.cssText = 'all:initial!important;position:fixed!important;bottom:20px!important;left:50%!important;transform:translateX(-50%)!important;z-index:2147483647!important;display:block!important;visibility:visible!important;';
+    host.style.cssText = 'all:initial!important;position:fixed!important;bottom:20px!important;left:50%!important;transform:translateX(-50%)!important;z-index:2147483647!important;display:block!important;visibility:visible!important;width:max-content!important;max-width:calc(100vw - 24px)!important;';
     const shadow = host.attachShadow({ mode: 'closed' });
-    shadow.innerHTML = `<style>:host{color-scheme:light}section{font:13px system-ui;color:#fff;background:#203d33;border:1px solid #607a66;border-radius:14px;padding:12px 15px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 35px #0003}span{white-space:nowrap}button{font:12px system-ui;border:1px solid #6b8373;border-radius:7px;padding:8px 10px;background:#345b49;color:white;cursor:pointer}button:focus-visible{outline:2px solid #c9df9f}small{display:block;color:#c7d6c9;font-size:10px;margin-top:3px}</style><section aria-label="Screenshot capture"><span><strong>Loading the page…</strong><small>Keep this tab active · Esc to cancel</small></span><button id="finish">Finish now</button><button id="cancel">Cancel</button></section>`;
+    // Keep the design isolated from the captured page's styles and fonts.
+    shadow.innerHTML = `<style>
+      :host{color-scheme:dark}
+      *{box-sizing:border-box}
+      section{font:12px/1.5 system-ui,sans-serif;color:#f9f8f7;background:#111;border:1px solid #666;padding:14px 16px;display:flex;align-items:center;gap:16px;box-shadow:0 8px 32px #0005}
+      .mark{width:25px;height:25px;flex-shrink:0;fill:none;stroke:#eea052;stroke-width:1.5}
+      .copy{min-width:0;flex:1}
+      strong{font-weight:500;display:block}
+      small{display:block;color:#b2b0ad;font-size:10px;margin-top:3px}
+      .actions{display:flex;gap:8px}
+      button{font:10px/1.5 ui-monospace,monospace;text-transform:uppercase;border:1px solid #666;padding:9px 12px;min-height:36px;background:transparent;color:#f9f8f7;cursor:pointer;white-space:nowrap}
+      #finish{background:#f9f8f7;color:#111;border-color:#f9f8f7}
+      button:hover{border-color:#f9f8f7;background:#202020}
+      #finish:hover{background:#dedbd6}
+      button:focus-visible{outline:2px solid #eea052;outline-offset:3px}
+      @media(max-width:540px){section{flex-wrap:wrap;gap:12px;padding:12px}.copy{flex-basis:calc(100% - 40px)}.actions{width:100%}.actions button{flex:1}}
+    </style><section aria-label="Screenshot capture"><svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><path d="M2 10V2h8m12 0h8v8M2 22v8h8m12 0h8v-8M11 8h10v16H11zM14 12h4m-4 4h4m-4 4h4"/></svg><span class="copy"><strong role="status">Loading the page…</strong><small>Keep this tab active · Esc to cancel</small></span><div class="actions"><button id="finish">Finish now</button><button id="cancel">Cancel</button></div></section>`;
     document.documentElement.append(host);
     state = { id, settings, original, style, motionStyle, host, label: shadow.querySelector('strong'), styles: [], heartbeat: Date.now(), stopping: false };
     for (const type of ['finish', 'cancel']) shadow.getElementById(type).addEventListener('click', () => sendControl(type));

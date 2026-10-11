@@ -60,6 +60,9 @@ Browser tests load the actual extension into an isolated Chromium profile and ex
 
 ## Source layout
 
+- `extension/design-system.css`: shared palette, typography, components, and keyboard focus styles; see [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) for usage.
+- `extension/popup.html` and `extension/popup.css`: capture actions, progress, and settings.
+- `extension/preview.html` and `extension/preview.css`: responsive capture preview and export controls.
 - `extension/background.js`: capture orchestration and Chrome API rate limiting.
 - `extension/content.js`: scroll/loading controller, temporary layout changes, and restoration.
 - `extension/preview.js`: local PNG stitching, splitting, and download UI.
