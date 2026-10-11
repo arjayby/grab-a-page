@@ -1,6 +1,6 @@
 # Grab a Page design system
 
-The extension uses a dark, precise visual language: near-black surfaces, warm white text, square corners, thin borders, and a restrained amber accent. Primary capture and download actions use a light surface to establish a clear hierarchy.
+The extension uses a dark, precise visual language: near-black surfaces, warm white text, square corners, thin borders, and a restrained amber accent. Capture actions use the secondary button style with amber frame corners; primary download actions use a light surface to establish a clear hierarchy.
 
 ## Foundations
 
@@ -24,8 +24,8 @@ Spacing follows a 4, 8, 12, 16, 24, 32, 48 px scale. Icons use unfilled geometri
 
 ## Components and states
 
-- **Primary action:** warm white background, dark text, square corners. Full-page and visible-area capture use compact, equal-width buttons in two columns. Each button resembles a screenshot frame with corner brackets, a centered action label, and one short description. Hover and pressed states provide feedback.
-- **Secondary action:** transparent or dark surface with a thin border. Disabled actions dim and expose the native disabled state.
+- **Primary action:** download buttons use a warm white background, dark uppercase monospace text, and square corners.
+- **Secondary action:** capture buttons and the preview's secondary action share transparent surfaces, muted uppercase monospace text, thin borders, and warm hover colors. Full-page and visible-area capture use equal-width buttons in two columns, with amber brackets at their outer corners, centered action labels, and one short description. Disabled actions dim and expose the native disabled state.
 - **Section label:** small uppercase monospace text with a bracketed section number.
 - **Settings:** native, labeled inputs with visible units and ranges; two columns for numeric fields. The content expands and collapses over 220 ms while its centered plus transitions to a minus. Rapid toggles reverse the same animation timeline. The summary and its focus outline stay visible, and scroll anchoring is disabled in the popup to avoid jumps during resizing. Reduced-motion preferences make the change immediate. Saving reflects normalized values, and editing clears the saved message.
 - **Progress:** textual section/pixel counts, an amber activity indicator, and immediate finish/cancel controls. The activity indicator is indeterminate, not a completion percentage.

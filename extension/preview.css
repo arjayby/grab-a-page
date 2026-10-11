@@ -16,8 +16,6 @@ h1 { font-size: clamp(28px, 3.5vw, 44px); letter-spacing: -1.6px; line-height: 1
 .export-info { flex: 1; min-width: 0; }
 .toolbar p { font: 11px/1.7 var(--font-mono); color: var(--color-muted); margin: 7px 0 0; }
 .export-actions { display: flex; gap: 10px; }
-.secondary { color: var(--color-muted); border-color: var(--color-border); }
-.secondary:hover:not(:disabled) { color: #efc59e; border-color: var(--color-warning-border); }
 #download::after { content: '↓'; font-size: 16px; margin-left: 8px; }
 .preview-stage { min-height: 220px; padding: 24px; border: 1px solid var(--color-border); background-color: #151515; background-image: radial-gradient(#363636 0.7px, transparent 0.7px); background-size: 12px 12px; }
 .parts { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); align-items: start; gap: 24px; }

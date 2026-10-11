@@ -6,22 +6,19 @@ body { width: 100%; padding: 0 24px; }
 .intro { padding: 18px 0; }
 .intro h1 { font-size: 32px; line-height: 1.08; letter-spacing: -1.25px; margin: 10px 0; }
 .capture-modes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.capture { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; width: 100%; min-width: 0; min-height: 96px; padding: 18px 12px; border: 1px solid var(--color-text); border-radius: 0; background: var(--color-text); color: var(--color-bg); box-shadow: 0 2px 0 #bdb9b3; text-align: center; }
-.capture::before { content: ''; position: absolute; inset: 6px; border: 1px solid #d3cfc9; pointer-events: none; }
-.capture::after { content: ''; position: absolute; inset: 5px; pointer-events: none; background:
-  linear-gradient(#6e6962, #6e6962) left top / 12px 2px no-repeat,
-  linear-gradient(#6e6962, #6e6962) left top / 2px 12px no-repeat,
-  linear-gradient(#6e6962, #6e6962) right top / 12px 2px no-repeat,
-  linear-gradient(#6e6962, #6e6962) right top / 2px 12px no-repeat,
-  linear-gradient(#6e6962, #6e6962) left bottom / 12px 2px no-repeat,
-  linear-gradient(#6e6962, #6e6962) left bottom / 2px 12px no-repeat,
-  linear-gradient(#6e6962, #6e6962) right bottom / 12px 2px no-repeat,
-  linear-gradient(#6e6962, #6e6962) right bottom / 2px 12px no-repeat;
+.capture { position: relative; flex-direction: column; gap: 6px; width: 100%; min-width: 0; min-height: 96px; padding: 18px 12px; text-align: center; }
+.capture::after { content: ''; position: absolute; inset: -1px; pointer-events: none; background:
+  linear-gradient(var(--color-accent), var(--color-accent)) left top / 12px 2px no-repeat,
+  linear-gradient(var(--color-accent), var(--color-accent)) left top / 2px 12px no-repeat,
+  linear-gradient(var(--color-accent), var(--color-accent)) right top / 12px 2px no-repeat,
+  linear-gradient(var(--color-accent), var(--color-accent)) right top / 2px 12px no-repeat,
+  linear-gradient(var(--color-accent), var(--color-accent)) left bottom / 12px 2px no-repeat,
+  linear-gradient(var(--color-accent), var(--color-accent)) left bottom / 2px 12px no-repeat,
+  linear-gradient(var(--color-accent), var(--color-accent)) right bottom / 12px 2px no-repeat,
+  linear-gradient(var(--color-accent), var(--color-accent)) right bottom / 2px 12px no-repeat;
 }
-.capture:hover:not(:disabled) { background: #e6e3de; border-color: #e6e3de; }
-.capture:active:not(:disabled) { background: #d7d3ce; border-color: #d7d3ce; box-shadow: none; transform: translateY(2px); }
-.capture strong { font: 600 14px/1.4 var(--font-body); white-space: nowrap; }
-.capture small { font-size: 11px; line-height: 1.5; color: #5d5b58; }
+.capture strong { font: inherit; white-space: nowrap; }
+.capture small { font: 11px/1.5 var(--font-body); text-transform: none; color: inherit; }
 .hint { margin: 12px 0 16px; display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--color-muted); }
 .hint .icon { width: 13px; height: 13px; }
 #running { padding: 16px; border: 1px solid var(--color-border); background: var(--color-surface); margin-bottom: 16px; }
