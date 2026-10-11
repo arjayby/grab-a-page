@@ -30,11 +30,10 @@ h1 { font-size: clamp(28px, 3.5vw, 44px); letter-spacing: -1.6px; line-height: 1
 .part figure { margin: 0; max-height: 70vh; overflow: auto; background: var(--color-bg); }
 .part figcaption { padding: 12px 16px; border-top: 1px solid var(--color-border); font: 10px/1.6 var(--font-mono); color: var(--color-muted); background: var(--color-surface); overflow-wrap: anywhere; }
 footer { display: flex; align-items: center; justify-content: space-between; gap: 32px; padding-top: 24px; }
-.storage-note { display: flex; gap: 10px; align-items: flex-start; max-width: 620px; }
+.storage-note { display: flex; gap: 10px; align-items: flex-start; }
 .storage-note .icon { width: 16px; height: 16px; margin-top: 2px; color: var(--color-subtle); }
 .storage-note p { font-size: 11px; color: var(--color-subtle); line-height: 1.8; margin: 0; }
 .storage-note p span { color: var(--color-muted); }
-.footer-wordmark { font: 18px var(--font-heading); letter-spacing: -.4px; color: var(--color-muted); white-space: nowrap; }
 #empty { text-align: center; padding: 48px 20px; }
 #empty > .icon { width: 32px; height: 32px; color: var(--color-subtle); }
 #empty h2 { font-size: 24px; letter-spacing: -.6px; margin: 16px 0 10px; }
