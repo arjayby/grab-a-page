@@ -5,7 +5,6 @@ body { width: 100%; padding: 0 24px; }
 .ready { display: flex; gap: 7px; align-items: center; font: 10px var(--font-mono); text-transform: uppercase; color: var(--color-muted); }
 .intro { padding: 18px 0; }
 .intro h1 { font-size: 32px; line-height: 1.08; letter-spacing: -1.25px; margin: 10px 0; }
-.intro p { font-size: 12px; line-height: 1.6; color: var(--color-muted); margin: 0; }
 .capture { width: 100%; text-align: left; border-radius: 0; }
 .full-capture { display: block; padding: 0; background: var(--color-text); color: var(--color-bg); border: 1px solid var(--color-text); }
 .full-capture:hover:not(:disabled) { background: #e6e3de; border-color: #e6e3de; }
@@ -75,4 +74,3 @@ label small { display: block; color: var(--color-subtle); font-size: 10px; margi
 #saved { font: 10px var(--font-mono); color: var(--color-accent); }
 footer { display: flex; align-items: center; gap: 7px; border-top: 1px solid var(--color-border); padding: 14px 0 16px; font-size: 10px; color: var(--color-subtle); }
 footer .icon { width: 13px; height: 13px; }
-.footer-format { margin-left: auto; font: 8px var(--font-mono); letter-spacing: .03em; }
