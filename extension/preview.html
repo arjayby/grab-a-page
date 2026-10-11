@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Capture preview · Grab a Page</title><link rel="stylesheet" href="preview.css"></head>
+<body>
+  <header><a href="#" class="brand" aria-label="Grab a Page">▣ <span>Grab a Page</span></a><span class="privacy">Stored on this device</span></header>
+  <main>
+    <div class="eyebrow">YOUR CAPTURE</div>
+    <div class="title-row"><h1 id="title">Putting the picture together…</h1><span id="badge" hidden></span></div>
+    <p id="meta" class="muted"></p>
+    <div id="warnings" role="status" hidden></div>
+    <div class="toolbar"><p id="status" role="status">Reading captured sections…</p><button id="download" class="primary" disabled>Download PNG</button><button id="delete" class="secondary" hidden>Delete capture</button></div>
+    <div id="parts" class="parts"></div>
+    <div id="empty" hidden><h2>No sections were captured</h2><p>Return to the page, open the extension, and try again.</p></div>
+    <footer>Captures stay in local temporary storage for up to 24 hours, cleaned up when you start another capture. Download the PNG to keep it.</footer>
+  </main>
+  <script type="module" src="preview.js"></script>
+</body></html>

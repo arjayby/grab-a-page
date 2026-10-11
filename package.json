@@ -1,0 +1,17 @@
+{
+  "name": "grab-a-page",
+  "version": "1.0.0",
+  "description": "Local Chrome extension for scroll-driven, lazy-loading-aware page screenshots",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "test:browser": "playwright test",
+    "check": "node scripts/check.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@playwright/test": "^1.64.0"
+  }
+}

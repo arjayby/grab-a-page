@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Grab a Page</title><link rel="stylesheet" href="popup.css"></head>
+<body>
+  <header><span class="mark" aria-hidden="true">▣</span><div><h1>Grab a Page</h1><p>A little scroll. The whole picture.</p></div></header>
+  <main>
+    <button id="full" class="capture primary"><span class="symbol" aria-hidden="true">↕</span><span><strong>Full page</strong><small>Scroll, load, and capture the page</small></span><span aria-hidden="true">↗</span></button>
+    <button id="visible" class="capture"><span class="symbol" aria-hidden="true">▤</span><span><strong>Visible area</strong><small>Exactly what’s on screen</small></span><span aria-hidden="true">↗</span></button>
+    <p class="hint">Keep this tab active during full-page capture.</p>
+    <section id="running" hidden aria-live="polite"><p id="progress"></p><div class="actions"><button id="finish">Finish now</button><button id="cancel">Cancel</button></div></section>
+    <p id="error" role="alert" hidden></p>
+    <button id="last" hidden>Open last capture</button>
+    <details><summary>Capture settings</summary><form id="settings">
+      <label>Maximum duration <span>seconds</span><input name="maxDuration" type="number" min="10" max="600" step="1" required></label>
+      <label>Maximum page height <span>pixels</span><input name="maxHeight" type="number" min="1000" max="100000" step="1" required></label>
+      <label>Pause after scrolling <span>milliseconds</span><input name="waitMs" type="number" min="300" max="5000" step="1" required></label>
+      <label>Wait for loading images <span>milliseconds</span><input name="loadTimeout" type="number" min="1000" max="10000" step="1" required></label>
+      <button type="submit">Save settings</button><span id="saved" role="status"></span>
+    </form></details>
+  </main>
+  <footer><span class="dot"></span> On your device. No uploads.</footer>
+  <script type="module" src="popup.js"></script>
+</body></html>

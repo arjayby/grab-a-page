@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Grab a Page",
+  "version": "1.0.0",
+  "description": "Capture the visible area or scroll the page to load content and save a full-page screenshot. Entirely local.",
+  "minimum_chrome_version": "120",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "action": { "default_popup": "popup.html", "default_title": "Grab a Page" },
+  "background": { "service_worker": "background.js", "type": "module" },
+  "icons": { "16": "icons/icon16.png", "48": "icons/icon48.png", "128": "icons/icon128.png" },
+  "content_security_policy": { "extension_pages": "script-src 'self'; object-src 'none'" }
+}
