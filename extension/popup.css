@@ -1,5 +1,5 @@
 /* Give Chrome a stable intrinsic popup size before its viewport is established. */
-html { width: 460px; min-width: 460px; min-height: 400px; max-height: 600px; overflow-x: hidden; overflow-y: auto; }
+html { width: 460px; min-width: 460px; min-height: 400px; max-height: 600px; overflow-x: hidden; overflow-y: auto; overflow-anchor: none; }
 body { width: 100%; padding: 0 24px; }
 .popup-header { display: flex; align-items: center; justify-content: space-between; padding: 18px 0; border-bottom: 1px solid var(--color-border); }
 .ready { display: flex; gap: 7px; align-items: center; font: 10px var(--font-mono); text-transform: uppercase; color: var(--color-muted); }
@@ -38,15 +38,17 @@ body { width: 100%; padding: 0 24px; }
 .last-capture span:first-of-type { flex: 1; text-align: left; }
 .last-capture .icon { width: 15px; height: 15px; }
 details { border-top: 1px solid var(--color-border); }
+.settings-panel { display: flow-root; }
+details.is-animating .settings-panel { overflow: clip; }
 summary { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; cursor: pointer; list-style: none; }
 summary::-webkit-details-marker { display: none; }
 summary .eyebrow { color: var(--color-muted); }
 summary:hover .eyebrow { color: var(--color-text); }
-.toggle { width: 20px; height: 20px; border: 1px solid var(--color-border-strong); position: relative; }
-.toggle::before, .toggle::after { content: ''; position: absolute; background: var(--color-muted); }
-.toggle::before { width: 8px; height: 1px; left: 5px; top: 9px; }
-.toggle::after { width: 1px; height: 8px; left: 9px; top: 5px; }
-details[open] .toggle::after { display: none; }
+.toggle { flex: 0 0 20px; width: 20px; height: 20px; border: 1px solid var(--color-border-strong); position: relative; }
+.toggle::before, .toggle::after { content: ''; position: absolute; inset: 0; margin: auto; background: var(--color-muted); }
+.toggle::before { width: 10px; height: 2px; }
+.toggle::after { width: 2px; height: 10px; transform-origin: center; transition: transform 220ms ease, opacity 220ms ease; }
+details[open]:not(.is-closing) .toggle::after { transform: scaleY(0); opacity: 0; }
 form { padding-bottom: 20px; }
 .settings-intro { font: 19px var(--font-heading); margin: 0 0 20px; letter-spacing: -.4px; }
 label { font-size: 12px; color: var(--color-muted); display: block; min-width: 0; }

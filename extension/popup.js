@@ -10,6 +10,59 @@ $('settings').addEventListener('submit', async event => {
   $('saved').textContent = 'Saved';
 });
 $('settings').addEventListener('input', () => { $('saved').textContent = ''; });
+const disclosure = $('settings').closest('details');
+const summary = disclosure.querySelector('summary');
+const settingsPanel = disclosure.querySelector('.settings-panel');
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+let settingsExpanded = disclosure.open;
+let settingsAnimation;
+
+function finishSettingsAnimation() {
+  // Restore natural layout before removing the animation's final frame.
+  disclosure.open = settingsExpanded;
+  disclosure.classList.remove('is-animating', 'is-closing');
+  settingsAnimation?.cancel();
+  settingsAnimation = null;
+}
+
+summary.setAttribute('aria-expanded', String(settingsExpanded));
+$('settings').inert = !settingsExpanded;
+summary.addEventListener('click', event => {
+  event.preventDefault();
+  settingsExpanded = !(settingsAnimation ? settingsExpanded : disclosure.open);
+  disclosure.classList.toggle('is-closing', !settingsExpanded);
+  summary.setAttribute('aria-expanded', String(settingsExpanded));
+  $('settings').inert = !settingsExpanded;
+
+  if (reducedMotion.matches) { finishSettingsAnimation(); return; }
+  if (settingsAnimation) {
+    // Reverse the same timeline without restarting its easing or layout.
+    settingsAnimation.reverse();
+    return;
+  }
+
+  // Keep the content rendered until closing finishes; never clip the summary.
+  disclosure.open = true;
+  const expandedHeight = settingsPanel.getBoundingClientRect().height;
+  disclosure.classList.add('is-animating');
+  const animation = settingsPanel.animate(
+    { height: ['0px', `${expandedHeight}px`] },
+    { duration: 220, easing: 'ease-in-out', fill: 'both' },
+  );
+  if (!settingsExpanded) {
+    animation.currentTime = 220;
+    animation.reverse();
+  }
+  settingsAnimation = animation;
+  animation.onfinish = () => {
+    if (settingsAnimation !== animation) return;
+    finishSettingsAnimation();
+  };
+});
+reducedMotion.addEventListener('change', () => {
+  if (reducedMotion.matches && settingsAnimation) finishSettingsAnimation();
+});
+
 async function refresh() {
   const status = await chrome.runtime.sendMessage({ type: 'status' });
   $('running').hidden = !status.running;

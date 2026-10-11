@@ -27,7 +27,7 @@ Spacing follows a 4, 8, 12, 16, 24, 32, 48 px scale. Icons use unfilled geometri
 - **Primary action:** warm white background, dark text, square corners. Full-page and visible-area capture use compact, equal-width buttons in two columns. Each button resembles a screenshot frame with corner brackets, a centered action label, and one short description. Hover and pressed states provide feedback.
 - **Secondary action:** transparent or dark surface with a thin border. Disabled actions dim and expose the native disabled state.
 - **Section label:** small uppercase monospace text with a bracketed section number.
-- **Settings:** native, labeled inputs with visible units and ranges; two columns for numeric fields. Saving reflects normalized values, and editing clears the saved message.
+- **Settings:** native, labeled inputs with visible units and ranges; two columns for numeric fields. The content expands and collapses over 220 ms while its centered plus transitions to a minus. Rapid toggles reverse the same animation timeline. The summary and its focus outline stay visible, and scroll anchoring is disabled in the popup to avoid jumps during resizing. Reduced-motion preferences make the change immediate. Saving reflects normalized values, and editing clears the saved message.
 - **Progress:** textual section/pixel counts, an amber activity indicator, and immediate finish/cancel controls. The activity indicator is indeterminate, not a completion percentage.
 - **Notice:** amber-tinted surface with a border, readable explanatory text, and an alert or status role.
 - **Preview:** bordered output panels on a subtle dot grid, with image downloads in the panel header and dimensions in the caption.

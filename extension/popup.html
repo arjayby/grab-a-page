@@ -37,22 +37,24 @@
     <button id="last" class="last-capture" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11a9 9 0 1 1 3 8M3 5v6h6m3-4v5l3 2"/></svg><span>Open last capture</span><span aria-hidden="true">↗</span></button>
     <details>
       <summary><span class="eyebrow">Capture settings</span><span class="toggle" aria-hidden="true"></span></summary>
-      <form id="settings">
-        <p class="settings-intro">Your page. Your pace.</p>
-        <label class="output-field" for="image-output">Image output
-          <span class="select-wrap">
-            <select id="image-output" name="imageOutput"><option value="single">One full-page PNG</option><option value="multiple">Multiple PNGs for large pages</option></select>
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-          </span>
-        </label>
-        <div class="settings-grid">
-          <label for="max-duration">Maximum duration<span class="input-wrap"><input id="max-duration" name="maxDuration" type="number" min="10" max="600" step="1" required><span class="unit" aria-hidden="true">sec</span></span><small>10–600 seconds</small></label>
-          <label for="max-height">Page height limit<span class="input-wrap"><input id="max-height" name="maxHeight" type="number" min="1000" max="100000" step="1" required><span class="unit" aria-hidden="true">px</span></span><small>1,000–100,000 pixels</small></label>
-          <label for="scroll-pause">Scroll pause<span class="input-wrap"><input id="scroll-pause" name="waitMs" type="number" min="300" max="5000" step="1" required><span class="unit" aria-hidden="true">ms</span></span><small>300–5,000 milliseconds</small></label>
-          <label for="image-wait">Image loading wait<span class="input-wrap"><input id="image-wait" name="loadTimeout" type="number" min="1000" max="10000" step="1" required><span class="unit" aria-hidden="true">ms</span></span><small>1,000–10,000 milliseconds</small></label>
-        </div>
-        <div class="save-row"><button type="submit" class="button">Save settings <span aria-hidden="true">↗</span></button><span id="saved" role="status"></span></div>
-      </form>
+      <div class="settings-panel">
+        <form id="settings">
+          <p class="settings-intro">Your page. Your pace.</p>
+          <label class="output-field" for="image-output">Image output
+            <span class="select-wrap">
+              <select id="image-output" name="imageOutput"><option value="single">One full-page PNG</option><option value="multiple">Multiple PNGs for large pages</option></select>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </label>
+          <div class="settings-grid">
+            <label for="max-duration">Maximum duration<span class="input-wrap"><input id="max-duration" name="maxDuration" type="number" min="10" max="600" step="1" required><span class="unit" aria-hidden="true">sec</span></span><small>10–600 seconds</small></label>
+            <label for="max-height">Page height limit<span class="input-wrap"><input id="max-height" name="maxHeight" type="number" min="1000" max="100000" step="1" required><span class="unit" aria-hidden="true">px</span></span><small>1,000–100,000 pixels</small></label>
+            <label for="scroll-pause">Scroll pause<span class="input-wrap"><input id="scroll-pause" name="waitMs" type="number" min="300" max="5000" step="1" required><span class="unit" aria-hidden="true">ms</span></span><small>300–5,000 milliseconds</small></label>
+            <label for="image-wait">Image loading wait<span class="input-wrap"><input id="image-wait" name="loadTimeout" type="number" min="1000" max="10000" step="1" required><span class="unit" aria-hidden="true">ms</span></span><small>1,000–10,000 milliseconds</small></label>
+          </div>
+          <div class="save-row"><button type="submit" class="button">Save settings <span aria-hidden="true">↗</span></button><span id="saved" role="status"></span></div>
+        </form>
+      </div>
     </details>
   </main>
   <footer><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 8 3v6c0 5-8 9-8 9s-8-4-8-9V6zM8 12l3 3 5-6"/></svg><span>Private. On your device. No uploads.</span></footer>

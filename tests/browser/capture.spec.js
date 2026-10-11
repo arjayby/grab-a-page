@@ -187,6 +187,75 @@ test('popup saves and restores the image output setting with single image as the
   await expect(popup.locator('select[name="imageOutput"]')).toHaveValue('multiple');
   await popup.close();
 });
+test('settings animation reverses smoothly without clipping focus or shifting the header', async () => {
+  const popup = await context.newPage();
+  try {
+    await popup.setViewportSize({ width: 460, height: 600 });
+    await popup.goto(`chrome-extension://${extensionId}/popup.html`);
+    await expect(popup.locator('summary')).toHaveAttribute('aria-expanded', 'false');
+    await popup.evaluate(() => document.fonts.ready);
+    const motion = await popup.evaluate(async () => {
+      const details = document.querySelector('details');
+      const summary = details.querySelector('summary');
+      const panel = details.querySelector('.settings-panel');
+      summary.focus();
+      const top = summary.getBoundingClientRect().top;
+      summary.click();
+      const animation = panel.getAnimations()[0];
+      for (let frame = 0; frame < 4; frame++) await new Promise(resolve => requestAnimationFrame(resolve));
+      const before = panel.getBoundingClientRect().height;
+      summary.click();
+      const after = panel.getBoundingClientRect().height;
+      // reverse() applies its pending playback rate on the next animation frame.
+      await animation.ready;
+      const reversed = panel.getAnimations()[0] === animation && animation.playbackRate < 0;
+      summary.click();
+      await animation.finished;
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      return { before, after, reversed, reused: panel.getAnimations().length === 0,
+        overflow: getComputedStyle(details).overflow, scroll: details.scrollTop,
+        top, finalTop: summary.getBoundingClientRect().top, focused: document.activeElement === summary };
+    });
+    expect(motion.before).toBeGreaterThan(0);
+    expect(Math.abs(motion.after - motion.before)).toBeLessThan(1);
+    expect(motion.reversed).toBe(true);
+    expect(motion.reused).toBe(true);
+    expect(motion.overflow).toBe('visible');
+    expect(motion.scroll).toBe(0);
+    expect(motion.finalTop).toBe(motion.top);
+    expect(motion.focused).toBe(true);
+    await popup.locator('summary').dblclick();
+    await expect(popup.locator('details')).not.toHaveClass(/is-animating/);
+    await expect(popup.locator('details')).toHaveJSProperty('open', true);
+    expect(await popup.locator('summary').evaluate(el => el.getBoundingClientRect().top)).toBe(motion.top);
+    await popup.locator('select').selectOption('multiple');
+    await popup.locator('button[type="submit"]').click();
+    await expect(popup.locator('#saved')).toHaveText('Saved');
+    await popup.locator('summary').press('Enter');
+    await expect(popup.locator('details')).toHaveJSProperty('open', false);
+    await expect(popup.locator('form')).toHaveJSProperty('inert', true);
+    expect(await popup.locator('.settings-panel').getAttribute('style')).toBeNull();
+  } finally { await popup.close(); }
+});
+test('settings honor reduced motion even when the preference changes during a transition', async () => {
+  const popup = await context.newPage();
+  try {
+    await popup.goto(`chrome-extension://${extensionId}/popup.html`);
+    await expect(popup.locator('summary')).toHaveAttribute('aria-expanded', 'false');
+    await popup.locator('summary').click();
+    await popup.emulateMedia({ reducedMotion: 'reduce' });
+    await expect(popup.locator('details')).not.toHaveClass(/is-animating/);
+    await expect(popup.locator('details')).toHaveJSProperty('open', true);
+    await popup.locator('summary').press('Space');
+    await expect(popup.locator('details')).toHaveJSProperty('open', false);
+    await popup.locator('summary').press('Enter');
+    await expect(popup.locator('details')).toHaveJSProperty('open', true);
+    expect(await popup.locator('.settings-panel').evaluate(el => el.getAnimations().length)).toBe(0);
+    await expect(popup.locator('form')).toHaveJSProperty('inert', false);
+    await popup.locator('button[type="submit"]').click();
+    await expect(popup.locator('#saved')).toHaveText('Saved');
+  } finally { await popup.close(); }
+});
 test('saved sections stitch into one PNG beyond full-canvas height limits', async () => {
   const preview = await context.newPage();
   await preview.goto(`chrome-extension://${extensionId}/popup.html`);
