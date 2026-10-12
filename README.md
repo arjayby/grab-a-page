@@ -1,50 +1,52 @@
 # Grab a Page
 
-A Chrome Manifest V3 extension that captures the visible webpage or scrolls through the main document, waits for lazy-loaded content, and stitches the rendered sections into a full-page PNG. All capture processing stays on your computer.
+A Chrome extension that saves a webpage as a PNG. Capture the visible area or scroll through the page to load content and create a full-page screenshot. Everything stays on your computer—no account, uploads, or analytics.
 
-## Install
+## Why this extension?
 
-1. Open `chrome://extensions` in Chrome 120 or newer.
-2. Enable **Developer mode**.
-3. Click **Load unpacked** and select the `extension` directory inside this project:
-   `/Users/arj/100k/grab-a-page/extension`
-4. Pin **Grab a Page** using Chrome’s Extensions menu.
-
-There is no build step, account, or server. The unpacked extension can also be tried in Chromium browsers such as Edge and Brave; automated verification uses Chromium. Select the directory containing `manifest.json`, not the project root. After changing the extension files, click its Reload button on the extensions page.
+Chrome’s normal **Capture full size screenshot** can miss content that only loads when it enters the viewport. Grab a Page scrolls through the page, waits for content to load, and captures each section before combining them into one image.
 
 ## Use
 
-Open the webpage you want to capture, then click the extension icon:
+Open a webpage, click the extension icon, and choose:
 
-- **Full page** starts at the top and scrolls in small animated steps through overlapping viewports, waiting for visible images, finite reveal animations, and page layout to settle before capturing each section. Keep the source tab active and leave the window size and zoom unchanged.
-- **Visible area** captures the current viewport, including its fixed headers and floating widgets, without scrolling or changing the page.
+- **Full page** to scroll and capture the page. Keep the tab active and leave the window size and zoom unchanged.
+- **Visible area** to capture what you currently see without scrolling.
 
-Full-page capture displays progress with **Finish now** and **Cancel** buttons. Escape also cancels. Finish now keeps the captured sections. Cancellation keeps any sections already captured and labels the result as cancelled. Both restore the original scroll position and temporarily modified styles. A preview opens after capture, where you can download the PNG or delete the temporary capture. **Open last capture** in the popup reopens your latest saved result, including sections saved before an interruption.
+Download the PNG from the preview. **Open last capture** reopens your latest result; **Delete capture** removes its temporary stored copy.
 
-Full-page captures keep top fixed headers once and temporarily hide other fixed overlays. Sticky elements temporarily stay in their normal document positions so their contents appear once, including panels taller than a viewport. Animations run while scrolling and settling, then pause for each screenshot. All temporary styles are restored after capture. This is a layout heuristic; unusual CSS can need a different policy in a future version.
+During full-page capture, use **Finish now** to stop early or **Cancel** / Escape to cancel. Both keep any sections already captured and restore the page’s original scroll position and temporary style changes.
 
-The default safety limits are **120 seconds** and **30,000 CSS pixels** of page height. The popup’s settings let you change these, the minimum pause after each scroll (700 ms), and the loading timeout (5 seconds). If a page loads content slowly after it enters view, increase the pause and loading timeout.
-
-**Image output** in Capture settings defaults to **One full-page PNG**, stitching every captured section into one image at the original screenshot resolution. The stitcher processes small strips so long pages do not require a full-page canvas. Save settings before starting a capture; each capture remembers its output choice when reopened.
-
-Choose **Multiple PNGs for large pages** to use the previous export behavior: large captures split into numbered PNGs at the original resolution. Parts are ordered from top to bottom (and left to right for exceptionally wide images). Small captures still produce one PNG. You can download each part separately. If Chrome asks to allow multiple downloads when using **Download all**, allow them or use the individual download links.
+In **Capture settings**, adjust the time and height limits or increase the scroll pause and loading timeout for slow pages. Output defaults to one full-page PNG; choose **Multiple PNGs for large pages** to split large captures into numbered parts. Save settings before capturing.
 
 ## Supported pages and limits
 
-- Ordinary websites, including authenticated pages you have already opened, are captured using the pixels Chrome renders.
-- Only the main document scrolls. Independently scrolling panels and embedded frames are captured as currently visible. Horizontal page overflow is not expanded.
-- Browser internal pages and the Chrome Web Store generally prevent the script injection needed for full-page scrolling. Visible capture is available where Chrome allows it. Local `file://` pages require enabling **Allow access to file URLs** in the extension’s Chrome settings.
-- Lazy-loaded images are waited on while visible. Failed or timed-out images produce an incomplete result with an explanation. Arbitrary application requests, cross-origin frame loading, background images, video playback, and content delayed beyond the configured wait cannot be guaranteed complete.
-- Sections are captured as you scroll, which helps with virtualized content that disappears when offscreen. Page reflows, recycled content whose size changes, unusually tall sticky elements, protected video, or sites that override scrolling can still affect fidelity. Detected scroll gaps, viewport changes, and tab switches stop the capture and preserve its usable portion.
-- Infinite feeds stop at your configured duration/height limit. Reaching a limit is explicitly labeled as a partial capture.
+- Works on ordinary websites, including pages you’re signed into. Local `file://` pages need **Allow access to file URLs** enabled in Chrome’s extension settings.
+- Browser internal pages and the Chrome Web Store restrict full-page capture. Visible capture works where Chrome allows it.
+- Only the main page scrolls. Scrollable panels, embedded frames, and horizontal overflow aren’t expanded.
+- Slow or failed loading, changing layouts, video, and unusual sticky elements can leave content missing or misplaced. Fixed headers are kept once, and other fixed overlays are temporarily hidden.
+- Captures stop at **120 seconds** or **30,000 CSS pixels** by default, including infinite feeds. Limits, loading failures, tab switches, or window changes can produce a partial capture with an explanation.
 
 ## Privacy and permissions
 
-The production manifest requests only `activeTab`, `scripting`, and `storage`. Access is granted when you invoke the extension; it does not request permanent access to every website. There are no analytics, upload endpoints, remote scripts, or external fonts. Image export uses local extension pages and browser storage.
+The extension uses `activeTab` to capture the tab you invoke it on, `scripting` to scroll and prepare the page, and `storage` to save settings. It does not request permanent access to every website or send captures anywhere.
 
-Captured image tiles, titles, and page URLs are temporarily held in extension-local IndexedDB. Captures older than 24 hours are deleted the next time another capture starts; **Delete capture** removes a capture immediately. Downloaded PNGs remain wherever you save them. The capture does not operate independently after the browser is closed.
+Images, page titles, and URLs are stored temporarily in local IndexedDB. Captures older than 24 hours are deleted when another capture starts; **Delete capture** removes them immediately. Downloaded PNGs stay wherever you save them.
 
 ## Development and verification
+
+### Install locally
+
+1. Open `chrome://extensions` in Chrome 120 or newer.
+2. Enable **Developer mode**.
+3. Click **Load unpacked** and select this project’s `extension` directory, which contains `manifest.json`.
+4. Pin **Grab a Page** from Chrome’s Extensions menu.
+
+No build step is needed. After editing extension files, click **Reload** on the extensions page. You can also try the extension in Edge or Brave.
+
+### Run checks
+
+Node and Playwright are needed only for development:
 
 ```sh
 npm install
@@ -54,9 +56,9 @@ npm test
 npm run test:browser
 ```
 
-The extension itself has no runtime package dependencies. Node and Playwright are only needed for development. `node scripts/generate-icons.mjs` regenerates the included toolbar icons.
+These commands check the source, run unit tests, and test the actual extension in Chromium. Browser tests cover capture, lazy loading, page restoration, partial captures, and PNG exports. Also try it on your own sites to check their layouts.
 
-Browser tests load the actual extension into an isolated Chromium profile and exercise PNG capture, lazy-image loading, seam colors, browser scaling, page restoration, infinite-page limits, early finish/cancellation, failed images, and split exports. The tests use the unchanged production manifest and invoke the actual toolbar action through Chromium’s extension debugging API, granting temporary active-tab access. A smoke test on your own sites is still useful for checking their particular layouts.
+To regenerate toolbar icons, run `node scripts/generate-icons.mjs`.
 
 ## Source layout
 
